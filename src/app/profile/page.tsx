@@ -54,7 +54,7 @@ export default function ProfilePage() {
       <ProfileLegalInformationSection
         account={account}
         onUpdate={handleUpdateAccount}
-        isEditing={editingSectionId === "legal-information"}
+        editingState={getEditingState(editingSectionId, "legal-information")}
         onEdit={() => handleEditSection("legal-information")}
         onCancelEdit={handleCancelEditSection}
       />
@@ -62,10 +62,24 @@ export default function ProfilePage() {
       <ProfilePreferencesSection
         account={account}
         onUpdate={handleUpdateAccount}
-        isEditing={editingSectionId === "preferences"}
+        editingState={getEditingState(editingSectionId, "preferences")}
         onEdit={() => handleEditSection("preferences")}
         onCancelEdit={handleCancelEditSection}
       />
     </main>
   );
+}
+
+// ---- Helpers ---- //
+
+function getEditingState(editingSectionId: string | null, sectionId: string) {
+  if (!editingSectionId) {
+    return "not-editing";
+  }
+
+  if (editingSectionId === sectionId) {
+    return "this-field";
+  }
+
+  return "other-field";
 }

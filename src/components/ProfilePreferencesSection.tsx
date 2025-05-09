@@ -13,7 +13,7 @@ import { mapErrorToStardustErrors } from "@/utils/stardust";
 interface ProfilePreferencesSectionProps {
   account: Account;
   onUpdate: (account: Account) => void;
-  isEditing: boolean;
+  editingState: "not-editing" | "this-field" | "other-field";
   onEdit: () => void;
   onCancelEdit: () => void;
 }
@@ -21,7 +21,7 @@ interface ProfilePreferencesSectionProps {
 export function ProfilePreferencesSection({
   account,
   onUpdate,
-  isEditing,
+  editingState,
   onEdit,
   onCancelEdit,
 }: ProfilePreferencesSectionProps) {
@@ -52,7 +52,7 @@ export function ProfilePreferencesSection({
     });
   }
 
-  if (isEditing) {
+  if (editingState === "this-field") {
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>Preferences</h3>
@@ -118,9 +118,11 @@ export function ProfilePreferencesSection({
       <p>Preferred name: {account.preferredName}</p>
       <p>Pronouns: {account.pronouns}</p>
 
-      <Button variant="secondary" onClick={onEdit}>
-        Edit
-      </Button>
+      {editingState === "not-editing" && (
+        <Button variant="secondary" onClick={onEdit}>
+          Edit
+        </Button>
+      )}
     </section>
   );
 }

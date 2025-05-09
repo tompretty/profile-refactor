@@ -8,7 +8,7 @@ import { mapErrorToStardustErrors } from "@/utils/stardust";
 interface ProfileLegalInformationSectionProps {
   account: Account;
   onUpdate: (account: Account) => void;
-  isEditing: boolean;
+  editingState: "not-editing" | "this-field" | "other-field";
   onEdit: () => void;
   onCancelEdit: () => void;
 }
@@ -16,7 +16,7 @@ interface ProfileLegalInformationSectionProps {
 export function ProfileLegalInformationSection({
   account,
   onUpdate,
-  isEditing,
+  editingState,
   onEdit,
   onCancelEdit,
 }: ProfileLegalInformationSectionProps) {
@@ -40,7 +40,7 @@ export function ProfileLegalInformationSection({
     });
   }
 
-  if (isEditing) {
+  if (editingState === "this-field") {
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>Legal information</h3>
@@ -77,9 +77,11 @@ export function ProfileLegalInformationSection({
       <p>Legal first name: {account.legalFirstName}</p>
       <p>Legal last name: {account.legalLastName}</p>
 
-      <Button variant="secondary" onClick={onEdit}>
-        Edit
-      </Button>
+      {editingState === "not-editing" && (
+        <Button variant="secondary" onClick={onEdit}>
+          Edit
+        </Button>
+      )}
     </section>
   );
 }
