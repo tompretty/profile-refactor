@@ -52,78 +52,75 @@ export function ProfilePreferencesSection({
     });
   }
 
-  if (editingState === "this-field") {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <h3>Preferences</h3>
+  return (
+    <EditableSection
+      editingState={editingState}
+      onEdit={onEdit}
+      editForm={
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h3>Preferences</h3>
 
-        <TextInput
-          {...register("preferredName")}
-          id="preferredName"
-          label="Preferred name"
-          errors={mapErrorToStardustErrors(errors.preferredName?.message)}
-        />
+          <TextInput
+            {...register("preferredName")}
+            id="preferredName"
+            label="Preferred name"
+            errors={mapErrorToStardustErrors(errors.preferredName?.message)}
+          />
 
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1">
-            <FormFieldset legend="Pronouns">
-              {STANDARD_PRONOUNS.map((pronoun) => (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <FormFieldset legend="Pronouns">
+                {STANDARD_PRONOUNS.map((pronoun) => (
+                  <RadioInput
+                    {...register("pronouns")}
+                    key={pronoun}
+                    label={pronoun}
+                    value={pronoun}
+                    size="medium"
+                  />
+                ))}
+
                 <RadioInput
                   {...register("pronouns")}
-                  key={pronoun}
-                  label={pronoun}
-                  value={pronoun}
+                  label="Other"
+                  value="Other"
                   size="medium"
                 />
-              ))}
+              </FormFieldset>
+            </div>
 
-              <RadioInput
-                {...register("pronouns")}
-                label="Other"
-                value="Other"
-                size="medium"
-              />
-            </FormFieldset>
+            {selectedPronouns === "Other" && (
+              <div className="mt-2">
+                <TextInput
+                  {...register("customPronouns")}
+                  id="customPronouns"
+                  label="Custom pronouns"
+                  errors={mapErrorToStardustErrors(
+                    errors.customPronouns?.message
+                  )}
+                />
+              </div>
+            )}
           </div>
 
-          {selectedPronouns === "Other" && (
-            <div className="mt-2">
-              <TextInput
-                {...register("customPronouns")}
-                id="customPronouns"
-                label="Custom pronouns"
-                errors={mapErrorToStardustErrors(
-                  errors.customPronouns?.message
-                )}
-              />
-            </div>
-          )}
-        </div>
+          <div className="flex gap-2 mt-4">
+            <Button type="submit">Save</Button>
 
-        <div className="flex gap-2 mt-4">
-          <Button type="submit">Save</Button>
+            <Button variant="secondary" onClick={onCancelEdit}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      }
+      display={
+        <>
+          <h3>Preferences</h3>
 
-          <Button variant="secondary" onClick={onCancelEdit}>
-            Cancel
-          </Button>
-        </div>
-      </form>
-    );
-  }
-
-  return (
-    <section>
-      <h3>Preferences</h3>
-
-      <p>Preferred name: {account.preferredName}</p>
-      <p>Pronouns: {account.pronouns}</p>
-
-      {editingState === "not-editing" && (
-        <Button variant="secondary" onClick={onEdit}>
-          Edit
-        </Button>
-      )}
-    </section>
+          <p>Preferred name: {account.preferredName}</p>
+          <p>Pronouns: {account.pronouns}</p>
+        </>
+      }
+    />
   );
 }
 
@@ -140,3 +137,35 @@ type PreferencesSectionFormData = z.infer<typeof preferencesSchema>;
 // ---- Helpers ---- //
 
 const STANDARD_PRONOUNS = ["He/Him", "She/Her", "They/Them"];
+
+// ---- Components ---- //
+
+interface EditableSectionProps {
+  editingState: "not-editing" | "this-field" | "other-field";
+  onEdit: () => void;
+  editForm: JSX.Element;
+  display: JSX.Element;
+}
+
+function EditableSection({
+  editingState,
+  onEdit,
+  editForm,
+  display,
+}: EditableSectionProps) {
+  if (editingState === "this-field") {
+    return editForm;
+  }
+
+  return (
+    <>
+      {display}
+
+      {editingState === "not-editing" && (
+        <Button variant="secondary" onClick={onEdit}>
+          Edit
+        </Button>
+      )}
+    </>
+  );
+}
