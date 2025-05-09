@@ -17,7 +17,7 @@ const ACCOUNT: Account = {
   legalFirstName: "Thomas",
   legalLastName: "Pretty",
   preferredName: "Tom",
-  pronouns: "He/Him",
+  pronouns: "Foo/Bar",
 };
 
 export default function ProfilePage() {
@@ -176,6 +176,7 @@ interface PreferencesSectionProps {
 const preferencesSchema = z.object({
   preferredName: z.string().min(1).max(10),
   pronouns: z.string().min(1),
+  customPronouns: z.string().optional(),
 });
 
 type PreferencesSectionFormData = z.infer<typeof preferencesSchema>;
@@ -187,52 +188,85 @@ function PreferencesSection({
   onEdit,
   onCancelEdit,
 }: PreferencesSectionProps) {
+  const standardPronouns = ["He/Him", "She/Her", "They/Them"];
+  const isCustomPronouns = !standardPronouns.includes(account.pronouns);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       preferredName: account.preferredName,
-      pronouns: account.pronouns,
+      pronouns: isCustomPronouns ? "Other" : account.pronouns,
+      customPronouns: isCustomPronouns ? account.pronouns : "",
     },
     resolver: zodResolver(preferencesSchema),
   });
+
+  const selectedPronouns = watch("pronouns");
 
   function onSubmit(data: PreferencesSectionFormData) {
     onUpdate({
       ...account,
       preferredName: data.preferredName,
-      pronouns: data.pronouns,
+      pronouns:
+        data.pronouns === "Other" ? data.customPronouns! : data.pronouns,
     });
   }
 
   if (isEditing) {
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h3>Legal information</h3>
+        <h3>Preferences</h3>
 
         <div className="flex flex-col gap-2">
           <label htmlFor="preferredName">Preferred name</label>
+
           <input
             id="preferredName"
             type="text"
             {...register("preferredName")}
           />
+
           <p className="text-red-500">{errors.preferredName?.message}</p>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="pronouns">Pronouns</label>
-          <input id="pronouns" type="text" {...register("pronouns")} />
-          <p className="text-red-500">{errors.pronouns?.message}</p>
+          <label>Pronouns</label>
+
+          <div className="flex flex-col gap-1">
+            {[...standardPronouns, "Other"].map((option) => (
+              <label key={option} className="flex items-center gap-2">
+                <input type="radio" value={option} {...register("pronouns")} />
+                {option}
+              </label>
+            ))}
+          </div>
+
+          {selectedPronouns === "Other" && (
+            <div className="mt-2">
+              <label htmlFor="customPronouns">Custom pronouns</label>
+
+              <input
+                id="customPronouns"
+                type="text"
+                {...register("customPronouns")}
+                className="w-full"
+              />
+              <p className="text-red-500">{errors.customPronouns?.message}</p>
+            </div>
+          )}
         </div>
 
-        <button type="submit">Save</button>
+        <div className="mt-4 flex gap-2">
+          <button type="submit">Save</button>
 
-        <button type="button" onClick={onCancelEdit}>
-          Cancel
-        </button>
+          <button type="button" onClick={onCancelEdit}>
+            Cancel
+          </button>
+        </div>
       </form>
     );
   }
