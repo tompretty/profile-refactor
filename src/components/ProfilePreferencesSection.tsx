@@ -5,8 +5,8 @@ import { Account } from "@/models/account";
 import {
   TextInput,
   Button,
-  RadioInput,
   FormFieldset,
+  RadioInput,
 } from "@multiverse-io/stardust-react";
 
 interface ProfilePreferencesSectionProps {
@@ -24,8 +24,7 @@ export function ProfilePreferencesSection({
   onEdit,
   onCancelEdit,
 }: ProfilePreferencesSectionProps) {
-  const standardPronouns = ["He/Him", "She/Her", "They/Them"];
-  const isCustomPronouns = !standardPronouns.includes(account.pronouns);
+  const isUsingCustomPronouns = !STANDARD_PRONOUNS.includes(account.pronouns);
 
   const {
     register,
@@ -35,8 +34,8 @@ export function ProfilePreferencesSection({
   } = useForm({
     defaultValues: {
       preferredName: account.preferredName,
-      pronouns: isCustomPronouns ? "Other" : account.pronouns,
-      customPronouns: isCustomPronouns ? account.pronouns : "",
+      pronouns: isUsingCustomPronouns ? "Other" : account.pronouns,
+      customPronouns: isUsingCustomPronouns ? account.pronouns : "",
     },
     resolver: zodResolver(preferencesSchema),
   });
@@ -71,26 +70,15 @@ export function ProfilePreferencesSection({
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <FormFieldset legend="Pronouns">
-              <RadioInput
-                {...register("pronouns")}
-                label="He/Him"
-                value="He/Him"
-                size="medium"
-              />
-
-              <RadioInput
-                {...register("pronouns")}
-                label="She/Her"
-                value="She/Her"
-                size="medium"
-              />
-
-              <RadioInput
-                {...register("pronouns")}
-                label="They/Them"
-                value="They/Them"
-                size="medium"
-              />
+              {STANDARD_PRONOUNS.map((pronoun) => (
+                <RadioInput
+                  {...register("pronouns")}
+                  key={pronoun}
+                  label={pronoun}
+                  value={pronoun}
+                  size="medium"
+                />
+              ))}
 
               <RadioInput
                 {...register("pronouns")}
@@ -151,3 +139,7 @@ const preferencesSchema = z.object({
 });
 
 type PreferencesSectionFormData = z.infer<typeof preferencesSchema>;
+
+// ---- Helpers ---- //
+
+const STANDARD_PRONOUNS = ["He/Him", "She/Her", "They/Them"];
