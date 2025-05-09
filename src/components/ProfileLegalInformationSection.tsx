@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Account } from "@/models/account";
 import { TextInput, Button } from "@multiverse-io/stardust-react";
+import { mapErrorToStardustErrors } from "@/utils/stardust";
 
 interface ProfileLegalInformationSectionProps {
   account: Account;
@@ -48,22 +49,14 @@ export function ProfileLegalInformationSection({
           {...register("legalFirstName")}
           id="legalFirstName"
           label="Legal first name"
-          errors={
-            errors.legalFirstName?.message
-              ? [errors.legalFirstName?.message]
-              : undefined
-          }
+          errors={mapErrorToStardustErrors(errors.legalFirstName?.message)}
         />
 
         <TextInput
           {...register("legalLastName")}
           id="legalLastName"
           label="Legal last name"
-          errors={
-            errors.legalLastName?.message
-              ? [errors.legalLastName?.message]
-              : undefined
-          }
+          errors={mapErrorToStardustErrors(errors.legalLastName?.message)}
         />
 
         <div className="flex gap-2 mt-4">

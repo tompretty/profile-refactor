@@ -8,6 +8,7 @@ import {
   FormFieldset,
   RadioInput,
 } from "@multiverse-io/stardust-react";
+import { mapErrorToStardustErrors } from "@/utils/stardust";
 
 interface ProfilePreferencesSectionProps {
   account: Account;
@@ -60,11 +61,7 @@ export function ProfilePreferencesSection({
           {...register("preferredName")}
           id="preferredName"
           label="Preferred name"
-          errors={
-            errors.preferredName?.message
-              ? [errors.preferredName?.message]
-              : undefined
-          }
+          errors={mapErrorToStardustErrors(errors.preferredName?.message)}
         />
 
         <div className="flex flex-col gap-2">
@@ -95,11 +92,9 @@ export function ProfilePreferencesSection({
                 {...register("customPronouns")}
                 id="customPronouns"
                 label="Custom pronouns"
-                errors={
+                errors={mapErrorToStardustErrors(
                   errors.customPronouns?.message
-                    ? [errors.customPronouns?.message]
-                    : undefined
-                }
+                )}
               />
             </div>
           )}
