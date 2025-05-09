@@ -5,6 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSearchParams, useRouter } from "next/navigation";
+import {
+  Button,
+  FormFieldset,
+  RadioInput,
+  TextInput,
+} from "@multiverse-io/stardust-react";
 
 interface Account {
   legalFirstName: string;
@@ -124,31 +130,35 @@ function LegalInformationSection({
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>Legal information</h3>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="legalFirstName">Legal first name</label>
-          <input
-            id="legalFirstName"
-            type="text"
-            {...register("legalFirstName")}
-          />
-          <p className="text-red-500">{errors.legalFirstName?.message}</p>
+        <TextInput
+          {...register("legalFirstName")}
+          id="legalFirstName"
+          label="Legal first name"
+          errors={
+            errors.legalFirstName?.message
+              ? [errors.legalFirstName?.message]
+              : undefined
+          }
+        />
+
+        <TextInput
+          {...register("legalLastName")}
+          id="legalLastName"
+          label="Legal last name"
+          errors={
+            errors.legalLastName?.message
+              ? [errors.legalLastName?.message]
+              : undefined
+          }
+        />
+
+        <div className="flex gap-2 mt-4">
+          <Button type="submit">Save</Button>
+
+          <Button variant="secondary" onClick={onCancelEdit}>
+            Cancel
+          </Button>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="legalLastName">Legal last name</label>
-          <input
-            id="legalLastName"
-            type="text"
-            {...register("legalLastName")}
-          />
-          <p className="text-red-500">{errors.legalFirstName?.message}</p>
-        </div>
-
-        <button type="submit">Save</button>
-
-        <button type="button" onClick={onCancelEdit}>
-          Cancel
-        </button>
       </form>
     );
   }
@@ -160,7 +170,9 @@ function LegalInformationSection({
       <p>Legal first name: {account.legalFirstName}</p>
       <p>Legal last name: {account.legalLastName}</p>
 
-      <button onClick={onEdit}>Edit</button>
+      <Button variant="secondary" onClick={onEdit}>
+        Edit
+      </Button>
     </section>
   );
 }
@@ -221,51 +233,72 @@ function PreferencesSection({
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>Preferences</h3>
 
+        <TextInput
+          {...register("preferredName")}
+          id="preferredName"
+          label="Preferred name"
+          errors={
+            errors.preferredName?.message
+              ? [errors.preferredName?.message]
+              : undefined
+          }
+        />
+
         <div className="flex flex-col gap-2">
-          <label htmlFor="preferredName">Preferred name</label>
-
-          <input
-            id="preferredName"
-            type="text"
-            {...register("preferredName")}
-          />
-
-          <p className="text-red-500">{errors.preferredName?.message}</p>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label>Pronouns</label>
-
           <div className="flex flex-col gap-1">
-            {[...standardPronouns, "Other"].map((option) => (
-              <label key={option} className="flex items-center gap-2">
-                <input type="radio" value={option} {...register("pronouns")} />
-                {option}
-              </label>
-            ))}
+            <FormFieldset legend="Pronouns">
+              <RadioInput
+                {...register("pronouns")}
+                label="He/Him"
+                value="He/Him"
+                size="medium"
+              />
+
+              <RadioInput
+                {...register("pronouns")}
+                label="She/Her"
+                value="She/Her"
+                size="medium"
+              />
+
+              <RadioInput
+                {...register("pronouns")}
+                label="They/Them"
+                value="They/Them"
+                size="medium"
+              />
+
+              <RadioInput
+                {...register("pronouns")}
+                label="Other"
+                value="Other"
+                size="medium"
+              />
+            </FormFieldset>
           </div>
 
           {selectedPronouns === "Other" && (
             <div className="mt-2">
-              <label htmlFor="customPronouns">Custom pronouns</label>
-
-              <input
-                id="customPronouns"
-                type="text"
+              <TextInput
                 {...register("customPronouns")}
-                className="w-full"
+                id="customPronouns"
+                label="Custom pronouns"
+                errors={
+                  errors.customPronouns?.message
+                    ? [errors.customPronouns?.message]
+                    : undefined
+                }
               />
-              <p className="text-red-500">{errors.customPronouns?.message}</p>
             </div>
           )}
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <button type="submit">Save</button>
+        <div className="flex gap-2 mt-4">
+          <Button type="submit">Save</Button>
 
-          <button type="button" onClick={onCancelEdit}>
+          <Button variant="secondary" onClick={onCancelEdit}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     );
@@ -278,7 +311,9 @@ function PreferencesSection({
       <p>Preferred name: {account.preferredName}</p>
       <p>Pronouns: {account.pronouns}</p>
 
-      <button onClick={onEdit}>Edit</button>
+      <Button variant="secondary" onClick={onEdit}>
+        Edit
+      </Button>
     </section>
   );
 }
